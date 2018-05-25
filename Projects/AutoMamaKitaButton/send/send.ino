@@ -3,9 +3,9 @@
 
 const char ssid[]="ssid";
 const char password[]="password";
-const char lock_url[]="api_url:5000/";
-const int trigger_pin = 26;
-const int echo_pin = 25;
+const char lock_url[]="http://api_ip:5000/";
+const int trigger_pin = 25;
+const int echo_pin = 26;
 int echo_res;
 int kyori;
 
@@ -14,17 +14,16 @@ void setup() {
   pinMode(trigger_pin,OUTPUT);
   pinMode(echo_pin,INPUT);
 
-  //Wifiに接続
   WiFi.begin(ssid,password);
   while(WiFi.status() != WL_CONNECTED){
     Serial.println("connecting");
     delay(100);
     }
   Serial.println("connected");
+  delay(1000);
 }
 void loop(){
 
-  //距離を測定
   digitalWrite(trigger_pin, LOW);        
   delayMicroseconds(2);            
   digitalWrite(trigger_pin, HIGH);    
@@ -33,18 +32,16 @@ void loop(){
   echo_res = pulseIn(echo_pin, HIGH);
   kyori =  echo_res*340*100/1000000;
   
-  //モニタに出力
   Serial.print(kyori);
   Serial.println("cm");
   
-  //30cm以下ならGETを送る
-  if(kyori < 30){
+  if(kyori < 50){
     HTTPClient http;
     http.begin(lock_url);
     int res_code = http.GET();
     Serial.println(res_code);
-    delay(5000);
+    delay(10000);
   }else{
-    delay(100);
+    delay(80);
   }
 }
